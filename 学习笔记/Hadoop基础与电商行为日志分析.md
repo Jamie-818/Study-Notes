@@ -260,11 +260,94 @@
    -  优点：原装Hadoop、纯开源、支持tez
    -  缺点：企业级安全不开源
 
-
 ---
 
 ##  分布式文件系统HDFS
+- Introduction
+    - The Hadoop Distributed File System (HDFS) is a distributed file system designed to run on commodity hardware. It has many similarities with existing distributed file systems. However, the differences from other distributed file systems are significant. HDFS is highly fault-tolerant and is designed to be deployed on low-cost hardware. HDFS provides high throughput access to application data and is suitable for applications that have large data sets. HDFS relaxes a few POSIX requirements to enable streaming access to file system data. HDFS was originally built as infrastructure for the Apache Nutch web search engine project. HDFS is part of the Apache Hadoop Core project. The project URL is http://hadoop.apache.org/.
+      - 分布式
+      - Commodity hardware 通用硬件
+      - fault-tolerant 容错 
+      - high throughput
+      - large data sets
+      
+- 分布式的文件系统
+- 文件系统：Linux、Windows、Mac...
+    - 目录结构
+    - 存放的是文件或者文件夹
+    - 对象提供服务：创建、修改、删除、查看、移动等等
+- 普通文件系统 vs 分布式文件系统
+    - 单机
+    - 分布式文件系统能够横跨N个机器
+    
+---
+### HDFS  Assumptions and Goals(设计目标)
+- Hardware Failure
+    - Hardware failure is the norm rather than the exception. An HDFS instance may consist of hundreds or thousands of server machines, each storing part of the file system’s data. The fact that there are a huge number of components and that each component has a non-trivial probability of failure means that some component of HDFS is always non-functional. Therefore, detection of faults and quick, automatic recovery from them is a core architectural goal of HDFS.
+    - 硬件故障是常态而不是例外。HDFS实例可能由数百或数千台服务器机器组成，每台机器存储文件系统数据的一部分。有大量的组件，而且每个组件都有一个非平凡的失败概率，这意味着HDFS的某些组件始终是非功能性的。因此，故障检测和快速、自动的恢复是HDFS的核心架构目标。
+        - Hardware failure 
+            - 每个机器只存储文件的部分数据，blocksize=128M，Blocksize存放在不同的机器上，由于容错，HDFS默认采用3副本机制
+- Streaming Data Access
+    - Applications that run on HDFS need streaming access to their data sets. They are not general purpose applications that typically run on general purpose file systems. HDFS is designed more for batch processing rather than interactive use by users. The emphasis is on high throughput of data access rather than low latency of data access. POSIX imposes many hard requirements that are not needed for applications that are targeted for HDFS. POSIX semantics in a few key areas has been traded to increase data throughput rates.
+    - 在HDFS运行的应用程序需要对其数据集进行流式访问。它们不是通常在通用文件系统上运行的通用应用程序。HDFS更多的是为批量处理而设计的，而不是供用户交互使用。重点是数据访问的高吞吐量，而不是数据访问的低延迟。POSIX提出了许多针对HDFS的应用程序不需要的硬性要求。一些关键领域的POSIX语义已经被用来提高数据吞吐率。
+        - 流式访问
+        - 批处理
+        - 高吞吐量(不适合做实时处理)      
+- Large Data Sets
+    - Applications that run on HDFS have large data sets. A typical file in HDFS is gigabytes to terabytes in size. Thus, HDFS is tuned to support large files. It should provide high aggregate data bandwidth and scale to hundreds of nodes in a single cluster. It should support tens of millions of files in a single instance.
+    - 在HDFS运行的应用程序有大量数据集。在HDFS，一个典型的文件大小是千兆字节到万亿字节。因此，HDFS被调整为支持大文件。它应该提供高聚合数据带宽，并扩展到单个集群中的数百个节点。它应该在一个实例中支持数千万个文件。
+- Moving Computation is Cheaper than Moving Data 移动计算比移动数据更划算     
+   - A computation requested by an application is much more efficient if it is executed near the data it operates on. This is especially true when the size of the data set is huge. This minimizes network congestion and increases the overall throughput of the system. The assumption is that it is often better to migrate the computation closer to where the data is located rather than moving the data to where the application is running. HDFS provides interfaces for applications to move themselves closer to where the data is located.
+   - 应用程序请求的计算如果在它操作的数据附近执行，效率会高得多。当数据集很大时，尤其如此。这最大限度地减少了网络拥塞，提高了系统的整体吞吐量。假设将计算迁移到更靠近数据所在的位置通常比将数据移动到应用程序运行的位置更好。HDFS为应用程序提供接口，使其更靠近数据所在的位置。
+    
+---
 
+### HDFS的架构
+- NameNode(master) and DataNodes(slave)
+    - HDFS has a master/slave architecture. An HDFS cluster consists of a single NameNode, a master server that manages the file system namespace and regulates access to files by clients. In addition, there are a number of DataNodes, usually one per node in the cluster, which manage storage attached to the nodes that they run on. HDFS exposes a file system namespace and allows user data to be stored in files. Internally, a file is split into one or more blocks and these blocks are stored in a set of DataNodes. The NameNode executes file system namespace operations like opening, closing, and renaming files and directories. It also determines the mapping of blocks to DataNodes. The DataNodes are responsible for serving read and write requests from the file system’s clients. The DataNodes also perform block creation, deletion, and replication upon instruction from the NameNode.
+    - HDFS有主/从建筑。HDFS群集由单个名称节点组成，这是一个管理文件系统名称空间并控制客户端对文件访问的主服务器。此外，还有许多数据节点，通常集群中的每个节点一个，它们管理连接到运行节点的存储。HDFS公开了一个文件系统命名空间，并允许用户数据存储在文件中。在内部，文件被分割成一个或多个块，这些块存储在一组数据节点中。名称节点执行文件系统名称空间操作，如打开、关闭和重命名文件和目录。它还确定块到数据节点的映射。数据节点负责服务来自文件系统客户端的读写请求。数据节点还根据名称节点的指令执行块创建、删除和复制。
+- 特点
+    1. NameNode and DataNodes
+    2. master/slave的架构
+    3. NN：
+        - the file system namespace 
+        - regulates access to files by clients
+    4. DN：storage
+    5. HDFS exposes a file system namespace and allows user data to be stored in files
+    6. a file is split into one or more blocks
+    7. blocks are stored in a set of DataNodes
+    8. The NameNode executes file system namespace operations like opening(CRUD)
+    9. determines the mapping of blocks to DataNodes
+    10. 通常情况下，一个node部署一个组件
+   
+    ![](http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsarchitecture.png)   
+ 
+---
+
+### 文件系统NameSpace详解
+- The File System Namespace
+    - HDFS supports a traditional hierarchical file organization. A user or an application can create directories and store files inside these directories. The file system namespace hierarchy is similar to most other existing file systems; one can create and remove files, move a file from one directory to another, or rename a file. HDFS supports user quotas and access permissions. HDFS does not support hard links or soft links. However, the HDFS architecture does not preclude implementing these features.
+        - HDFS支持传统的分层文件组织。用户或应用程序可以创建目录并将文件存储在这些目录中。文件系统命名空间层次结构类似于大多数其他现有文件系统；可以创建和删除文件，将文件从一个目录移动到另一个目录，或者重命名文件。HDFS支持用户配额和访问权限。HDFS不支持硬链接或软链接。然而，HDFS架构并不排除实现这些功能。
+    - The NameNode maintains the file system namespace. Any change to the file system namespace or its properties is recorded by the NameNode. An application can specify the number of replicas of a file that should be maintained by HDFS. The number of copies of a file is called the replication factor of that file. This information is stored by the NameNode.
+        - 名称节点维护文件系统名称空间。对文件系统命名空间或其属性的任何更改都由名称节点记录。应用程序可以指定应该由HDFS维护的文件副本的数量。文件的拷贝数称为该文件的复制因子。该信息由名称节点存储。
+            
+---
+
+### HDFS副本机制
+- Data Replication
+    - HDFS is designed to reliably store very large files across machines in a large cluster. It stores each file as a sequence of blocks. The blocks of a file are replicated for fault tolerance. The block size and replication factor are configurable per file.    
+        - HDFS的设计目的是在大型集群中跨机器可靠地存储非常大的文件。它将每个文件存储为块序列。复制文件的块是为了容错。每个文件都可以配置块大小和复制因子。       
+    - All blocks in a file except the last block are the same size, while users can start a new block without filling out the last block to the configured block size after the support for variable length block was added to append and hsync.
+        - 除了最后一个块之外，文件中的所有块大小都相同，而用户可以在append和hsync中添加了对可变长度块的支持之后，启动一个新块，而不需要将最后一个块填充到所配置的块大小。
+    - An application can specify the number of replicas of a file. The replication factor can be specified at file creation time and can be changed later. Files in HDFS are write-once (except for appends and truncates) and have strictly one writer at any time. 
+        - 应用程序可以指定文件的副本数量。复制因子可以在文件创建时指定，稍后可以更改。HDFS中的文件是写一次的(除了追加和截断)，并且任何时候只有一个写器。
+    - The NameNode makes all decisions regarding replication of blocks. It periodically receives a Heartbeat and a Blockreport from each of the DataNodes in the cluster. Receipt of a Heartbeat implies that the DataNode is functioning properly. A Blockreport contains a list of all blocks on a DataNode.
+        -NameNode做出关于复制块的所有决策。它定期从集群中的每个数据节点接收心跳和块报告。接收到心跳意味着DataNode正常工作。块报告包含DataNode上的所有块的列表。
+    ![](http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsdatanodes.png)         
+
+---
+
+    
 ---
 
 ## 分布式资源调度YARN
