@@ -59,3 +59,26 @@
     - RELEASE版本缓一缓(因为是第一个正式版)
     - SR2之后一般可大规模使用
 
+## 整合SpringCloudAlibaba
+```xml
+ <dependencyManagement>
+        <dependencies>
+            <!--整合Spring Cloud-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--整合Spring Cloud Alibaba-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>0.9.0.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+```
