@@ -40,4 +40,57 @@
     ![](https://cdn.nlark.com/lark/0/2018/png/11189/1533045871534-e64b8031-008c-4dfc-b6e8-12a597a003fb.png)
   > 服务发现组件 + 配置服务器
   
- ## 搭建NacosServer
+## 搭建NacosServer
+- 下载NacosServer
+   - 下载地址 ：https://github.com/alibaba/nacos/releases
+    - 如何查看兼容的nacos版本?
+       - 找到你pom导入的 spring-cloud-alibaba-dependencies
+       ```xml
+          <!--整合Spring Cloud alibaba-->
+          <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+              <version>0.9.0.RELEASE</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+       ```
+       - 点击进去 在<properties> 里面即可看到nacos版本
+       ```xml
+         <nacos.client.version>1.0.0</nacos.client.version>
+       ```
+- 搭建NacosServer
+  - 参考文档：https://nacos.io/zh-cn/docs/quick-start.html 
+  - 启动服务器
+    - Linux/Unix/Mac
+      启动命令(standalone代表着单机模式运行，非集群模式):
+      ```
+      sh startup.sh -m standalone
+      ```
+    - Windows
+      启动命令：
+      ```
+      cmd startup.cmd
+      ```
+      或者双击startup.cmd运行文件。
+  - 打开网页 http://localhost:8848/nacos/index.html#/login
+  - 账号密码:nacos/nacos 
+  - 进入控制台
+  
+## 将应用注册到Nacos
+> SpringCloud 项目命名规律：spring-cloud-starter-{Spring Cloud子项目的名称}-[{模块名称}] 
+  - spring-cloud-starter-alibaba-dependencies
+  - spring-cloud-starter-openfeign 
+1. 添加依赖
+```xml
+ <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+  </dependency>
+```
+2. 加注解(非必须) @EnableDiscoveryClient
+3. 加配置
+```
+spring.cloud.nacos.config.server-addr=127.0.0.1:8848
+spring.application.name=example
+```
