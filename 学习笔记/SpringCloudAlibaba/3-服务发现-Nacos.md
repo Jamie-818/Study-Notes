@@ -94,3 +94,34 @@
 spring.cloud.nacos.config.server-addr=127.0.0.1:8848
 spring.application.name=example
 ```
+
+## 服务发现的领域模型
+![](.3-服务发现-Nacos_images/1174c310.png)
+- Namespace：实现隔离，默认public
+- Group：不同服务可以分到一个组，默认DEFAULT_GROUP
+- Service：微服务
+- Cluster：对指定微服务的一个虚拟划分，默认DEFAULT
+- Instance：微服务实例
+
+## 元数据
+- 什么是元数据？
+  - 官方描述：Nacos数据（如配置和服务）描述信息，如服务版本、权重、容灾策略、负载均衡策略、鉴权配置、各种自定义标签 (label)，从作用范围来看，分为服务级别的元信息、集群的元信息及实例的元信息。
+  - 级别：【~~服务级别~~、~~集群级别~~、实例级别】
+- 元数据作用
+  - 提供描述信息
+  - 让微服务调用更加灵活 
+    - 例如微服务版本控制
+- 如何为微服务设置元数据
+  - 控制台设置    
+  - 配置文件指定
+   ```yaml
+    spring:
+      cloud:
+        nacos:
+          discovery:
+            #元数据设置
+            metadata:
+              instance: c
+              haha: hehe
+              version: v1
+  ```  
