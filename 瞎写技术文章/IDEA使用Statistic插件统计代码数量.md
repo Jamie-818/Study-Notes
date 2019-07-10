@@ -1,4 +1,4 @@
-# IDEA使用Statistic插件统计代码数量.md
+# IDEA使用Statistic插件统计代码数量
 > 我们一个项目写下来，有时候需要统计一下代码项目代码的行数，或者想知道自己到底写了多少代码，可以使用IDEA插件Statistic扫描代码并统计结果。
 - IDEA版本：2019.1.3
 1. 安装插件
@@ -31,6 +31,7 @@ File->settings->plugins,点击"Marketplace"输入"Statistic"搜索
   - **Blank Lines** : 空行数
   - **Blank Lines(%)** : 空行百分比(Blank Lines/Total Lines)
 
+> Refresh 统计该项目代码
 > Refresh on selection 对你当前打开的代码进行统计。  
 > Settings 里面可以排除一些文件夹，例如编译后的文件夹(前端),或者排除外部包和一个不需要统计的文件格式文件。
 
