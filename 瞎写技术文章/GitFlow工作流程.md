@@ -1,6 +1,6 @@
 ## 什么是Gitflow
 - Gitflow是基于Git的强大分支能力所构建的一套软件开发工作流，最早由Vincent Driessen在2010年提出。最有名的大概是下面这张图。
-![](.GitFlow工作流中各角色的工作内容_images/bec5b8a1.png)
+![](.GitFlow工作流程_images/bec5b8a1.png)
 
 ---
 
