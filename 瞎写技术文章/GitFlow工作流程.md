@@ -46,7 +46,7 @@
   - 用户或者测试
     - 基于**1.0.0-Release**里程碑版本在git上新建一个issue
   > 现有主干分支: **master**、**develop**、**1.0.0-Release**(tag)
-### 修复阶段
+### 修复阶段(开始修复bug)
   - 程序猿
     - 基于**1.0.0-Release**tag创建一个**hotfix_0001**(该issue序号)分支
     - 在**hotfix_0001**分支上修复bug
@@ -54,7 +54,7 @@
   - 开发组长
     - 确认代码没问题，通过该合并请求
   > 现有主干分支: **master**、**develop**、**1.0.0-Release**(tag)、**hotfix_0001**
-### 测试阶段(开发完毕)
+### 测试阶段(bug修复完毕)
   - 测试
     - 对**master**分支的代码进行测试
   > 现有主干分支: **master**、**develop**、**1.0.0-Release**(tag)、**hotfix_0001**
